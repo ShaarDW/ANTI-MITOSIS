@@ -3,25 +3,26 @@ import HelloWorldScene from "./scenes/HelloWorldScene.js";
 // Create a new Phaser config object
 const config = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: 640,
+  height: 360,
+  pixelArt: true, // <--- ¡Agrega esta línea!
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     min: {
-      width: 800,
-      height: 600,
+      width: 640,
+      height: 360,
     },
     max: {
-      width: 1600,
-      height: 1200,
+      width: 1280, // <-- Cambia aquí
+      height: 720, // <-- Cambia aquí
     },
   },
   physics: {
-    default: "arcade",
-    arcade: {
-      gravity: { y: 200 },
+    default: "matter",
+    matter: {
       debug: true,
+      gravity: { y: 0.22 },
     },
   },
   // List of scenes to load
