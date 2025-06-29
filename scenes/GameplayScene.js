@@ -59,6 +59,10 @@ export default class GameplayScene extends Phaser.Scene {
       frameWidth: 16, // Ajusta según el tamaño de tu frame
       frameHeight: 16
     });
+    this.load.spritesheet("virus muerte", "public/assets/virus muerte.png", {
+      frameWidth: 16, // Ajusta según el tamaño de tu frame
+      frameHeight: 16
+    });
     this.load.spritesheet("celula muerte", "public/assets/muerte celula.png", {
       frameWidth: 32, // Ajusta según el tamaño de tu frame
       frameHeight: 32
@@ -75,7 +79,14 @@ export default class GameplayScene extends Phaser.Scene {
       frameWidth: 21, // Ajusta según el tamaño de tu frame
       frameHeight: 21
     });
-
+    this.load.spritesheet("celula jijeo", "public/assets/celula jijeo.png", {
+      frameWidth: 32, // Ajusta según el tamaño de tu frame
+      frameHeight: 34
+    });
+    this.load.spritesheet("virus jijeo", "public/assets/virus jijeo.png", {
+      frameWidth: 16, // Ajusta según el tamaño de tu frame
+      frameHeight: 17
+    });
   
     this.load.audio("laser_shoot", "public/assets/Laser_Shoot.wav");
     this.load.audio("muerte_celula", "public/assets/muerte celula.wav");
@@ -85,6 +96,7 @@ export default class GameplayScene extends Phaser.Scene {
     this.load.audio("muerte agente", "public/assets/muerte agente.wav");
     this.load.audio("musica_gameplay_1", "public/assets/musica gameplay 1.mp3");
     this.load.audio("musica_gameplay_2", "public/assets/musica gameplay 2.mp3");
+    this.load.audio("risa_celula", "public/assets/risas.wav");
   }
 
   create() {
@@ -103,7 +115,13 @@ export default class GameplayScene extends Phaser.Scene {
     this.add.rectangle(width / 2, height - thickness / 2, width, thickness)
       .setOrigin(0.5)
       .setDepth(1);
-    this.matter.add.rectangle(width / 2, height - thickness / 2 -34 , width, thickness, { isStatic: true });
+    this.suelo = this.matter.add.rectangle(
+      width / 2,
+      height - thickness / 2 - 34,
+      width,
+      thickness,
+      { isStatic: true, label: 'suelo' } // <--- agrega label
+    );
 
     // Techo
     this.add.rectangle(width / 2, thickness / 2, width, thickness)
@@ -157,20 +175,38 @@ this.anims.create({
 });
 this.anims.create({
   key: 'celula_muerte_anim',
-  frames: this.anims.generateFrameNumbers('celula muerte', { start: 0, end: 3 }), // Ajusta end según tus frames
+  frames: this.anims.generateFrameNumbers('celula muerte', { start: 0, end: 1 }), // Ajusta end según tus frames
   frameRate: 12,
   repeat: 0
 });
 this.anims.create({
-  key: 'score2000',
-  frames: this.anims.generateFrameNumbers('2000', { start: 0, end: 3 }), // Ajusta end según tus frames
+  key: 'celula_jijeo_anim',
+  frames: this.anims.generateFrameNumbers('celula jijeo', { start: 0, end: 1 }), // Ajusta end según tus frames
+  frameRate: 12,
+  repeat: -1
+});
+this.anims.create({
+  key: 'virus_jijeo_anim',
+  frames: this.anims.generateFrameNumbers('virus jijeo', { start: 0, end: 1 }), // Ajusta end según tus frames
+  frameRate: 12,
+  repeat: -1
+});
+this.anims.create({
+  key: 'virus_muerte_anim',
+  frames: this.anims.generateFrameNumbers('virus muerte', { start: 0, end: 1 }), // Ajusta end según tus frames
   frameRate: 10,
   repeat: 0
 });
 this.anims.create({
+  key: 'score2000',
+  frames: this.anims.generateFrameNumbers('2000', { start: 0, end: 6 }), // Ajusta end según tus frames
+  frameRate: 11,
+  repeat: 0
+});
+this.anims.create({
   key: 'score500',
-  frames: this.anims.generateFrameNumbers('500', { start: 0, end: 3 }), // Ajusta end según tus frames
-  frameRate: 10,
+  frames: this.anims.generateFrameNumbers('500', { start: 0, end: 6 }), // Ajusta end según tus frames
+  frameRate: 11,
   repeat: 0
 });
 
@@ -224,12 +260,11 @@ this.anims.create({
 
        // PUNTUACIÓN
     this.score = 0; // Inicializa el score aquí
-    this.scoreText = this.add.text(430, 320, '00000000', {
-      fontSize: '28px',
+    this.scoreText = this.add.text(440, 320, '00000000', {
+      fontSize: '280px',
       fill: '#fff',
       fontFamily: 'Retro Gaming',
-      resolution: 3
-    }).setScrollFactor(0).setDepth(10);
+    }).setScrollFactor(0).setDepth(10).setScale(0.1);
 
     
     // Limpia listeners previos para evitar duplicados
@@ -345,6 +380,7 @@ this.anims.create({
             powerUp.setScale(1);
             powerUp.setRectangle(20, 20);
             powerUp.setIgnoreGravity(false);
+            powerUp.setSensor(true);
             powerUp.isPowerUp = true;
             powerUp.tipo = tipo;
             this.powerUps.push(powerUp);
@@ -417,19 +453,61 @@ this.anims.create({
           // Activa el nuevo power-up
           if (powerUp.tipo === "powerup_shield") {
             this.hasShield = true;
-            this.astronauta.setTint(0x00ffff); // Efecto visual
+            this.astronauta.setTint(0x00ffff);
             this.activePowerUpIcon.setTexture("powerup_shield").setVisible(true);
-            this.time.delayedCall(5000, () => {
-              this.hasShield = false;
-              this.astronauta.clearTint();
-              this.activePowerUpIcon.setVisible(false);
+
+            // Si ya hay un timer activo, elimínalo antes de crear uno nuevo
+            if (this.shieldTimer) {
+                this.shieldTimer.remove(false);
+            }
+            // Limpia cualquier tween previo
+            if (this.activePowerUpTween) {
+                this.activePowerUpTween.stop();
+                this.activePowerUpIcon.setAlpha(1);
+            }
+            this.shieldTimer = this.time.delayedCall(5000, () => {
+                this.hasShield = false;
+                this.astronauta.clearTint();
+                this.activePowerUpIcon.setVisible(false);
+                this.shieldTimer = null;
+            });
+
+            // Titileo en los últimos 1.2 segundos
+            this.time.delayedCall(3800, () => {
+                this.activePowerUpTween = this.tweens.add({
+                    targets: this.activePowerUpIcon,
+                    alpha: 0.2,
+                    duration: 200,
+                    yoyo: true,
+                    repeat: 5 // Titila varias veces
+                });
             });
           } else if (powerUp.tipo === "powerup_triple") {
             this.tripleShot = true;
             this.activePowerUpIcon.setTexture("powerup_triple").setVisible(true);
-            this.time.delayedCall(5000, () => {
-              this.tripleShot = false;
-              this.activePowerUpIcon.setVisible(false);
+
+            if (this.tripleShotTimer) {
+                this.tripleShotTimer.remove(false);
+            }
+            if (this.activePowerUpTween) {
+                this.activePowerUpTween.stop();
+                this.activePowerUpIcon.setAlpha(1);
+            }
+            this.tripleShotTimer = this.time.delayedCall(5000, () => {
+                this.tripleShot = false;
+                this.activePowerUpIcon.setVisible(false);
+                this.tripleShotTimer = null;
+            });
+
+            // Titileo en los últimos 1.2 segundos
+            this.time.delayedCall(3800, () => {
+                this.activePowerUpTween = this.tweens.add({
+                    targets: this.activePowerUpIcon,
+                    alpha: 0.2,
+                    duration: 200,
+                    yoyo: true,
+                    repeat: 5
+                });
             });
           }
           powerUp.destroy();
@@ -479,13 +557,24 @@ this.anims.create({
             this.sound.play("muerte_virus");
           }
 
-          // Elimina el virus y el láser
+          // Guarda la posición y escala antes de destruir el virus
           const virusX = virusObj.x;
           const virusY = virusObj.y;
+          const virusScale = virusObj.scaleX;
+
+          // Elimina el virus y el láser
           virusObj.destroy();
           laserObj.destroy();
           this.viruses = this.viruses.filter(v => v !== virusObj);
           this.lasers = this.lasers.filter(l => l !== laserObj);
+
+          // Animación de muerte del virus
+          const deathVirus = this.add.sprite(virusX, virusY, 'virus muerte');
+          deathVirus.setScale(virusScale);
+          deathVirus.play('virus_muerte_anim');
+          deathVirus.on('animationcomplete', () => {
+            deathVirus.destroy();
+          });
 
           // Suma 2000 puntos
           this.score += 2000;
@@ -498,17 +587,19 @@ this.anims.create({
           scoreSprite.setScale(1);
           scoreSprite.play({ key: 'score2000', repeat: 0 });
 
-          // Si no tienes la animación, créala una vez en create():
-          // this.anims.create({
-          //   key: 'score2000',
-          //   frames: this.anims.generateFrameNumbers('2000', { start: 0, end: 3 }), // Ajusta end según tus frames
-          //   frameRate: 10,
-          //   repeat: 0
-          // });
-
           scoreSprite.on('animationcomplete', () => {
             scoreSprite.destroy();
           });
+        }
+
+        // Colisión power-up con suelo
+        if (
+        (a.isPowerUp && b.body && b.body.label === 'suelo') ||
+        (b.isPowerUp && a.body && a.body.label === 'suelo')
+        ) {
+          const powerUp = a.isPowerUp ? a : b;
+          powerUp.setVelocity(0, 0);
+          powerUp.setIgnoreGravity(true); // ¡Esto detiene la caída!
         }
       });
     });
@@ -568,7 +659,7 @@ this.anims.create({
 
     // --- En create(), reemplaza el timer de virus por: ---
 const spawnVirus = () => {
-  const x = Phaser.Math.Between(4, this.width - 40);
+  const x = Phaser.Math.Between(40, this.width - 40);
   const y = Phaser.Math.Between(80, this.height / 2);
   const virus = this.matter.add.sprite(x, y, "virus");
   virus.play('virusAnim');
@@ -580,11 +671,18 @@ const spawnVirus = () => {
   virus.setIgnoreGravity(true);
   virus.setFixedRotation(); // No rota
   virus.isVirus = true;
-  const dir = Phaser.Math.Between(0, 1) === 0 ? -1 : 1;
-  const speedX = 12 + Phaser.Math.FloatBetween(0, 0.8); // Velocidad horizontal entre 0.4 y 1
-  const speedY = Phaser.Math.FloatBetween(-3, 3);
-  virus.setVelocity(dir * speedX, speedY);
-  virus.direccionX = dir;
+
+  // Ángulo obtuso: entre 110° y 250° o entre -250° y -110°
+  // En radianes: entre 110*(PI/180) y 250*(PI/180)
+  const angleDeg = Phaser.Math.Between(110, 250);
+  const angleRad = Phaser.Math.DegToRad(angleDeg);
+  const speed = 5; // Ajusta la velocidad a tu gusto
+
+  const vx = Math.cos(angleRad) * speed;
+  const vy = Math.sin(angleRad) * speed;
+  virus.setVelocity(vx, vy);
+
+  virus.direccionX = Math.sign(vx);
   this.viruses.push(virus);
 
   // Programa el próximo spawn con delay aleatorio entre 7 y 10 segundos
@@ -596,7 +694,7 @@ const spawnVirus = () => {
 spawnVirus();
 
 this.activePowerUpIcon = this.add.image(310, 340, null)
-  .setScale(1.2)
+  .setScale(1)
   .setVisible(false)
   .setDepth(20);
 
@@ -770,6 +868,18 @@ this.activePowerUpIcon = this.add.image(310, 340, null)
         virus.setVelocityY(vy);
       }
     });
+
+    this.powerUps.forEach(powerUp => {
+      // Si el powerUp está cayendo y llega al suelo...
+      if (
+        powerUp.active &&
+        powerUp.y + powerUp.displayHeight / 2 >= this.height - this.thickness - 34
+      ) {
+        powerUp.setVelocity(0, 0);
+        powerUp.setIgnoreGravity(true);
+        powerUp.y = this.height - this.thickness - 34 - powerUp.displayHeight / 2; // Lo ajusta justo sobre el suelo
+      }
+    });
   }
 
 
@@ -792,9 +902,39 @@ gameOver() {
         this.sound.play("muerte agente", { volume: 0.5 * this.sys.game.globals.sfxVolume });
     }
 
+    // ¡Haz que todas las células se rían!
+    this.circles.forEach(c => {
+        const x = c.x;
+        const y = c.y;
+        const scale = c.scaleX;
+        c.setActive(false);
+        c.setVisible(false);
+        if (c.body) this.matter.world.remove(c.body);
+        const risa = this.add.sprite(x, y, 'celula jijeo');
+        risa.setScale(scale);
+        risa.play('celula_jijeo_anim');
+    });
+
+    // Reproduce el sonido de risa de las células
+    if (this.sound) {
+        this.sound.play("risa_celula", { volume: 0.7 * this.sys.game.globals.sfxVolume });
+    }
+
+    // ¡Haz que todos los virus se rían!
+    this.viruses.forEach(v => {
+        const x = v.x;
+        const y = v.y;
+        const scale = v.scaleX;
+        v.setActive(false);
+        v.setVisible(false);
+        if (v.body) this.matter.world.remove(v.body);
+        const risaVirus = this.add.sprite(x, y, 'virus jijeo');
+        risaVirus.setScale(scale);
+        risaVirus.play('virus_jijeo_anim');
+    });
+
     // Detén física y animaciones
     this.matter.world.enabled = false;
-    this.circles.forEach(c => c.anims.pause());
     this.viruses.forEach(v => v.anims.pause());
     if (this.astronauta.anims) this.astronauta.anims.pause();
     this.lasers.forEach(l => l.setVelocity(0, 0));

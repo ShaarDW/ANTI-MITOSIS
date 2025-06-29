@@ -46,20 +46,6 @@ export default class OpcionesScene extends Phaser.Scene {
             this.musicVolume = (dragX - (centerX - 100)) / 200;
             this.updateMusicVolume();
         });
-
-        // Drag sonidos
-        this.sfxHandle.setInteractive({ draggable: true });
-        this.input.setDraggable(this.sfxHandle);
-        this.sfxHandle.on('drag', (pointer, dragX) => {
-            dragX = Phaser.Math.Clamp(dragX, centerX - 100, centerX + 100);
-            this.sfxHandle.x = dragX;
-            this.sfxVolume = (dragX - (centerX - 100)) / 200;
-            this.updateSfxVolume();
-            if (this.sound) {
-                this.sound.play("Seleccionar", { volume: this.sfxVolume });
-            }
-        });
-
         // Opciones de menú: 0 = música, 1 = sonidos, 2 = volver
         this.selectedBar = 0;
         const volverY = baseY + spacingY * 2.4 + 30;

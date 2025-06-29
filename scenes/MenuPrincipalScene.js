@@ -47,9 +47,9 @@ export default class MenuPrincipalScene extends Phaser.Scene {
         menuOptions.forEach((option, i) => {
             const menuText = this.add.text(width / 2, startY + i * optionSpacing, option.text, {
                 fontFamily: 'Retro Gaming',
-                fontSize: '20px',
+                fontSize: '240px',
                 color: i === 0 ? '#ffcc00' : '#ffffff'
-            }).setOrigin(0.5);
+            }).setOrigin(0.5).setScale(0.1);
 
             // No setInteractive, solo teclado
             this.menuTexts.push(menuText);

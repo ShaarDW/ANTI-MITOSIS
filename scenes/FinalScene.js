@@ -25,16 +25,16 @@ export default class FinalScene extends Phaser.Scene {
             width / 2,
             height / 2 - 50,
             '¡Juego Terminado!',
-            { fontSize: '48px', color: '#fff' , fontFamily: 'Retro Gaming' }
-        ).setOrigin(0.5).setDepth(100);
+            { fontSize: '460px', color: '#fff' , fontFamily: 'Retro Gaming' }
+        ).setOrigin(0.5).setDepth(100).setScale(0.1);
 
         this.displayedScore = 0;
         const scoreText = this.add.text(
             width / 2,
             height / 2 + 10,
             `Puntuación final: 0`,
-            { fontSize: '32px', color: '#fff', fontFamily: 'Retro Gaming' }
-        ).setOrigin(0.5).setDepth(100);
+            { fontSize: '320px', color: '#fff', fontFamily: 'Retro Gaming' }
+        ).setOrigin(0.5).setDepth(100).setScale(0.1);
 
         // Reproduce el sonido del contador de puntos solo si el score es mayor a 0
         if (this.sound && this.finalScore > 0) {
@@ -67,10 +67,10 @@ export default class FinalScene extends Phaser.Scene {
         let selected = 0;
         const optionTexts = opciones.map((op, i) =>
             this.add.text(width / 2, height / 2 + 70 + i * 40, op.text, {
-                fontSize: '20px',
+                fontSize: '200px',
                 color: i === 0 ? '#ffcc00' : '#fff',
                 fontFamily: 'Retro Gaming'
-            }).setOrigin(0.5).setDepth(100)
+            }).setOrigin(0.5).setDepth(100).setScale(0.1)
         );
 
         const updateSelection = () => {
