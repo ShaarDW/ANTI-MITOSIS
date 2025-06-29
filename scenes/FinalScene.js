@@ -36,9 +36,9 @@ export default class FinalScene extends Phaser.Scene {
             { fontSize: '32px', color: '#fff', fontFamily: 'Retro Gaming' }
         ).setOrigin(0.5).setDepth(100);
 
-        // Reproduce el sonido del contador de puntos
-        if (this.sound) {
-            this.sound.play("contador_puntos", { loop: true, volume: 0.4* this.sys.game.globals.sfxVolume });
+        // Reproduce el sonido del contador de puntos solo si el score es mayor a 0
+        if (this.sound && this.finalScore > 0) {
+            this.sound.play("contador_puntos", { loop: true, volume: 0.3 * this.sys.game.globals.sfxVolume });
         }
 
         this.tweens.addCounter({
@@ -51,8 +51,8 @@ export default class FinalScene extends Phaser.Scene {
             },
             onComplete: () => {
                 scoreText.setText(`Puntuación final: ${this.finalScore}`);
-                // Detiene el sonido del contador y reproduce el de finalización
-                if (this.sound) {
+                // Solo detiene/reproduce sonido si el score es mayor a 0
+                if (this.sound && this.finalScore > 0) {
                     this.sound.stopByKey("contador_puntos");
                     this.sound.play("fin_contador", { volume: this.sys.game.globals.sfxVolume });
                 }
@@ -92,12 +92,13 @@ export default class FinalScene extends Phaser.Scene {
         });
 
         this.input.keyboard.on('keydown-SPACE', () => {
+            if (this.sound) this.sound.stopByKey("contador_puntos");
             if (opciones[selected].scene === 'MenuPrincipalScene') {
                 this.scene.stop('GameplayScene');
                 this.scene.stop();
                 this.scene.start('MenuPrincipalScene');
             } else {
-                this.scene.stop('GameplayScene'); // <-- Detén la anterior si existe
+                this.scene.stop('GameplayScene');
                 this.scene.stop();
                 this.scene.start('GameplayScene');
             }

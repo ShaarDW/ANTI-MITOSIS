@@ -26,7 +26,7 @@ const config = {
   physics: {
     default: "matter",
     matter: {
-      debug: false,
+      debug: true,
       gravity: { y: 0.22 },
     },
   },
@@ -40,6 +40,6 @@ const config = {
 // Create a new Phaser game instance
 const game = new Phaser.Game(config);
 game.globals = {
-    musicVolume: 0.6, // o el valor por defecto que prefieras
-    sfxVolume: 0.6
+    musicVolume: 0.3, // o el valor por defecto que prefieras
+    sfxVolume: 0.3
 };

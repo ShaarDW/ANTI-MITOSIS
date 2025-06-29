@@ -202,10 +202,10 @@ this.anims.create({
     this.astronauta = this.matter.add.sprite(width / 2, height - thickness - 34, "agente");
     this.astronauta.setScale(0.75); // Ajusta si es necesario
     this.astronauta.play('agente_idle');
-    this.astronauta.setRectangle(25, 34);
+    this.astronauta.setRectangle(21, 34);
     this.astronauta.setFixedRotation();
     this.astronauta.setFriction(0.01, 0, 0);
-    this.astronauta.setFrictionAir(0.02);
+    this.astronauta.setFrictionAir(0.01);
     this.astronauta.setBounce(0);
 
 
@@ -375,6 +375,10 @@ this.anims.create({
             this.perderVida();
             this.invulnerable = true;
             this.astronauta.setAlpha(0.5); // Efecto visual
+
+            // --- Haz que la burbuja salga disparada hacia arriba ---
+            const bubbleObj = a.isBubble ? a : b;
+            bubbleObj.setVelocityY(-4); // Ajusta la velocidad si quieres
 
             // Quita la invulnerabilidad después de 1 segundo
             this.time.delayedCall(1000, () => {
@@ -753,7 +757,7 @@ this.activePowerUpIcon = this.add.image(310, 340, null)
       virus.setVelocityX(virus.direccionX * speedX);
 
       // Rebote manual en suelo
-      if (virus.y + virus.displayHeight / 2 >= this.height - this.thickness -34) {
+      if (virus.y + virus.displayHeight / 2 >= this.height - this.thickness -55) {
         virus.setVelocityY(-2.5); // Rebote hacia arriba
       }
       // Rebote manual en techo
@@ -785,7 +789,7 @@ gameOver() {
     }
     // Reproduce el sonido de muerte del agente
     if (this.sound) {
-        this.sound.play("muerte agente");
+        this.sound.play("muerte agente", { volume: 0.5 * this.sys.game.globals.sfxVolume });
     }
 
     // Detén física y animaciones
