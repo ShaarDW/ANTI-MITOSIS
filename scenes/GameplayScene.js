@@ -402,7 +402,7 @@ this.anims.create({
 
           // Reproduce el sonido de recoger power-up
           if (this.sound) {
-            this.sound.play("Pickup_Powerup");
+            this.sound.play("Pickup_Powerup", { volume: 0.76 * this.sys.game.globals.sfxVolume });
           }
 
           // Desactiva cualquier power-up anterior
