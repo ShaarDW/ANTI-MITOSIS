@@ -318,8 +318,17 @@ export default class MenuPrincipalScene extends Phaser.Scene {
 
         // Spawnea otra célula animada en el lugar del logo después de 12 segundos
         this.time.delayedCall(12000, () => {
-            const newCell = this.add.sprite(logoCellX, logoCellY, "celula", 0).setScale(2).setDepth(20);
+            const newCell = this.add.sprite(logoCellX, logoCellY, "celula", 0)
+                .setScale(2)
+                .setDepth(20)
+                .setAlpha(0); // Empieza invisible
             newCell.play('circleAnim');
+            this.tweens.add({
+                targets: newCell,
+                alpha: 1,
+                duration: 1200, // 1.2 segundos de fade in
+                ease: 'Linear'
+            });
         });
 
         this.events.once('shutdown', () => {
