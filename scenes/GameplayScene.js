@@ -88,15 +88,15 @@ export default class GameplayScene extends Phaser.Scene {
       frameHeight: 17
     });
   
-    this.load.audio("laser_shoot", "public/assets/Laser_Shoot.wav");
-    this.load.audio("muerte_celula", "public/assets/muerte celula.wav");
-    this.load.audio("muerte_virus", "public/assets/muerte virus.wav");
-    this.load.audio("hit_agente", "public/assets/Hit_agente.wav");
-    this.load.audio("Pickup_Powerup", "public/assets/Pickup_Coin2.wav");
-    this.load.audio("muerte agente", "public/assets/muerte agente.wav");
-    this.load.audio("musica_gameplay_1", "public/assets/musica gameplay 1.mp3");
-    this.load.audio("musica_gameplay_2", "public/assets/musica gameplay 2.mp3");
-    this.load.audio("risa_celula", "public/assets/risas.wav");
+    this.load.audio("laser_shoot", "public/assets/Audio/Laser_Shoot.wav");
+    this.load.audio("muerte_celula", "public/assets/Audio/muerte celula.wav");
+    this.load.audio("muerte_virus", "public/assets/Audio/muerte virus.wav");
+    this.load.audio("hit_agente", "public/assets/Audio/Hit_agente.wav");
+    this.load.audio("Pickup_Powerup", "public/assets/Audio/Pickup_Coin2.wav");
+    this.load.audio("muerte agente", "public/assets/Audio/muerte agente.wav");
+    this.load.audio("musica_gameplay_1", "public/assets/Audio/musica gameplay 1.wav");
+    this.load.audio("musica_gameplay_2", "public/assets/Audio/musica gameplay 2.wav");
+    this.load.audio("risa_celula", "public/assets/Audio/risas.wav");
   }
 
   create() {
@@ -693,7 +693,14 @@ const spawnVirus = () => {
 // Inicia el primer spawn
 spawnVirus();
 
-this.activePowerUpIcon = this.add.image(310, 340, null)
+// Marco para el icono de power-up (siempre visible)
+this.activePowerUpFrame = this.add.rectangle(310, 336, 23, 23)
+  .setStrokeStyle(2, 0xffffff)
+  .setFillStyle(0x000000, 0.4) // Opcional: fondo semitransparente
+  .setDepth(19); // Debajo del icono
+
+// Icono del power-up (encima del marco)
+this.activePowerUpIcon = this.add.image(310, 336, null)
   .setScale(1)
   .setVisible(false)
   .setDepth(20);

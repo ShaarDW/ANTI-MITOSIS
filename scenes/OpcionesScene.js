@@ -4,9 +4,9 @@ export default class OpcionesScene extends Phaser.Scene {
     }
     preload() {
         this.load.image("fondo", "public/assets/FONDO GAME PRUEBA.png");
-        this.load.audio("Seleccionar", "public/assets/Seleccionar.wav");
-        this.load.audio("musica_menu", "public/assets/musica_menu.mp3");
-        this.load.audio("navegar_opciones", "public/assets/navegar opciones 2.wav");
+        this.load.audio("Seleccionar", "public/assets/Audio/Seleccionar.wav");
+        this.load.audio("musica_menu", "public/assets/Audio/musica menu.wav");
+        this.load.audio("navegar_opciones", "public/assets/Audio/navegar opciones 2.wav");
     }
 
     create() {

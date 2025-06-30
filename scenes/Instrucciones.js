@@ -111,14 +111,14 @@ export default class InstruccionesScene extends Phaser.Scene {
         this.add.text(col2X - 10, 105, 'Escudo', {
             fontSize: '100px',
             fontFamily: 'Retro Gaming',
-            color: '#00ffff'
+            color: '#ffffff'
         }).setOrigin(0, 0.5).setScale(0.1);
 
         this.add.image(col2X - 30, 135, 'powerup_triple').setScale(1);
         this.add.text(col2X - 10, 135, 'Triple disparo', {
             fontSize: '100px',
             fontFamily: 'Retro Gaming',
-            color: '#ffcc00'
+            color: '#ffffff'
         }).setOrigin(0, 0.5).setScale(0.1);
 
         this.add.text(col2X, 175, 'Objetivo:', {

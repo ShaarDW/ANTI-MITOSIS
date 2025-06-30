@@ -9,10 +9,10 @@ export default class FinalScene extends Phaser.Scene {
         
     }
     preload() {
-        this.load.image("fondo game", "public/assets/FONDO GAME PRUEBA.png");
-        this.load.audio("navegar_abajo", "public/assets/navegar opciones 2.wav");
-        this.load.audio("contador_puntos", "public/assets/contador puntos.mp3");
-        this.load.audio("fin_contador", "public/assets/cuando salen los numeritos.wav");
+        this.load.image("fondo game", "public/assets/Audio/FONDO GAME PRUEBA.png");
+        this.load.audio("navegar_abajo", "public/assets/Audio/navegar opciones 2.wav");
+        this.load.audio("contador_puntos", "public/assets/Audio/contador puntos.mp3");
+        this.load.audio("fin_contador", "public/assets/Audio/cuando salen los numeritos.wav");
     }
 
     create() {
