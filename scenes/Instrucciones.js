@@ -128,7 +128,7 @@ export default class InstruccionesScene extends Phaser.Scene {
             align: 'center'
         }).setOrigin(0.5).setScale(0.1);
 
-        this.add.text(col2X, 250, '- Esquiva enemigos \ny elimínalos. \n\n - Logra la mayor cantidad\n de puntos', {
+        this.add.text(col2X, 230, '- Esquiva enemigos \ny elimínalos. \n\n - Logra la mayor cantidad\n de puntos', {
             fontSize: '100px',
             fontFamily: 'Retro Gaming',
             color: '#ffffff',

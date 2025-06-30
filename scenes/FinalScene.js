@@ -25,15 +25,15 @@ export default class FinalScene extends Phaser.Scene {
             width / 2,
             height / 2 - 50,
             '¡Juego Terminado!',
-            { fontSize: '460px', color: '#fff' , fontFamily: 'Retro Gaming' }
+            { fontSize: '420px', color: '#fff' , fontFamily: 'Retro Gaming' }
         ).setOrigin(0.5).setDepth(100).setScale(0.1);
 
         this.displayedScore = 0;
         const scoreText = this.add.text(
             width / 2,
-            height / 2 + 10,
+            height / 2 - 10,
             `Puntuación final: 0`,
-            { fontSize: '320px', color: '#fff', fontFamily: 'Retro Gaming' }
+            { fontSize: '280px', color: '#fff', fontFamily: 'Retro Gaming' }
         ).setOrigin(0.5).setDepth(100).setScale(0.1);
 
         // Reproduce el sonido del contador de puntos solo si el score es mayor a 0
@@ -61,12 +61,13 @@ export default class FinalScene extends Phaser.Scene {
 
         // Opciones de menú
         const opciones = [
-            { text: 'Volver al menú principal', scene: 'MenuPrincipalScene' },
-            { text: 'Jugar otra partida', scene: 'GameplayScene' }
+             
+            { text: 'Jugar de nuevo', scene: 'GameplayScene' },
+            { text: 'Volver al menú', scene: 'MenuPrincipalScene' }
         ];
         let selected = 0;
         const optionTexts = opciones.map((op, i) =>
-            this.add.text(width / 2, height / 2 + 70 + i * 40, op.text, {
+            this.add.text(width / 2, height / 2 + 50 + i * 40, op.text, {
                 fontSize: '200px',
                 color: i === 0 ? '#ffcc00' : '#fff',
                 fontFamily: 'Retro Gaming'
@@ -74,9 +75,10 @@ export default class FinalScene extends Phaser.Scene {
         );
 
         const updateSelection = () => {
-            optionTexts.forEach((txt, i) =>
-                txt.setColor(i === selected ? '#ffcc00' : '#fff')
-            );
+            optionTexts.forEach((txt, i) => {
+                txt.setColor(i === selected ? '#ffcc00' : '#fff');
+                txt.setScale(i === selected ? 0.14 : 0.1); // Más grande si está seleccionada
+            });
         };
 
         this.input.keyboard.on('keydown-UP', () => {
@@ -103,5 +105,7 @@ export default class FinalScene extends Phaser.Scene {
                 this.scene.start('GameplayScene');
             }
         });
+
+        updateSelection(); // <-- Agrega esto aquí
     }
 }

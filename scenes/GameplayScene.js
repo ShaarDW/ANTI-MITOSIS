@@ -441,14 +441,30 @@ this.anims.create({
             this.sound.play("Pickup_Powerup", { volume: 0.76 * this.sys.game.globals.sfxVolume });
           }
 
-          // Desactiva cualquier power-up anterior
-          if (this.hasShield) {
-            this.hasShield = false;
-            this.astronauta.clearTint();
+          // Limpia cualquier timer/tween/delayedCall previo de ambos power-ups
+          if (this.shieldTimer) {
+            this.shieldTimer.remove(false);
+            this.shieldTimer = null;
           }
-          if (this.tripleShot) {
-            this.tripleShot = false;
+          if (this.tripleShotTimer) {
+            this.tripleShotTimer.remove(false);
+            this.tripleShotTimer = null;
           }
+          if (this.activePowerUpTween) {
+            this.activePowerUpTween.stop();
+            this.activePowerUpTween = null;
+          }
+          // NUEVO: limpia el delayedCall del parpadeo si existe
+          if (this.powerUpBlinkDelay) {
+            this.powerUpBlinkDelay.remove(false);
+            this.powerUpBlinkDelay = null;
+          }
+          this.activePowerUpIcon.setAlpha(1);
+
+          // Desactiva efectos previos
+          this.hasShield = false;
+          this.tripleShot = false;
+          this.astronauta.clearTint();
 
           // Activa el nuevo power-up
           if (powerUp.tipo === "powerup_shield") {
@@ -456,58 +472,42 @@ this.anims.create({
             this.astronauta.setTint(0x00ffff);
             this.activePowerUpIcon.setTexture("powerup_shield").setVisible(true);
 
-            // Si ya hay un timer activo, elimínalo antes de crear uno nuevo
-            if (this.shieldTimer) {
-                this.shieldTimer.remove(false);
-            }
-            // Limpia cualquier tween previo
-            if (this.activePowerUpTween) {
-                this.activePowerUpTween.stop();
-                this.activePowerUpIcon.setAlpha(1);
-            }
             this.shieldTimer = this.time.delayedCall(5000, () => {
-                this.hasShield = false;
-                this.astronauta.clearTint();
-                this.activePowerUpIcon.setVisible(false);
-                this.shieldTimer = null;
+              this.hasShield = false;
+              this.astronauta.clearTint();
+              this.activePowerUpIcon.setVisible(false);
+              this.shieldTimer = null;
             });
 
-            // Titileo en los últimos 1.2 segundos
-            this.time.delayedCall(3800, () => {
-                this.activePowerUpTween = this.tweens.add({
-                    targets: this.activePowerUpIcon,
-                    alpha: 0.2,
-                    duration: 200,
-                    yoyo: true,
-                    repeat: 5 // Titila varias veces
-                });
+            // NUEVO: guarda el delayedCall del parpadeo
+            this.powerUpBlinkDelay = this.time.delayedCall(3800, () => {
+              this.activePowerUpTween = this.tweens.add({
+                targets: this.activePowerUpIcon,
+                alpha: 0.2,
+                duration: 200,
+                yoyo: true,
+                repeat: 5
+              });
             });
           } else if (powerUp.tipo === "powerup_triple") {
             this.tripleShot = true;
             this.activePowerUpIcon.setTexture("powerup_triple").setVisible(true);
 
-            if (this.tripleShotTimer) {
-                this.tripleShotTimer.remove(false);
-            }
-            if (this.activePowerUpTween) {
-                this.activePowerUpTween.stop();
-                this.activePowerUpIcon.setAlpha(1);
-            }
             this.tripleShotTimer = this.time.delayedCall(5000, () => {
-                this.tripleShot = false;
-                this.activePowerUpIcon.setVisible(false);
-                this.tripleShotTimer = null;
+              this.tripleShot = false;
+              this.activePowerUpIcon.setVisible(false);
+              this.tripleShotTimer = null;
             });
 
-            // Titileo en los últimos 1.2 segundos
-            this.time.delayedCall(3800, () => {
-                this.activePowerUpTween = this.tweens.add({
-                    targets: this.activePowerUpIcon,
-                    alpha: 0.2,
-                    duration: 200,
-                    yoyo: true,
-                    repeat: 5
-                });
+            // NUEVO: guarda el delayedCall del parpadeo
+            this.powerUpBlinkDelay = this.time.delayedCall(3800, () => {
+              this.activePowerUpTween = this.tweens.add({
+                targets: this.activePowerUpIcon,
+                alpha: 0.2,
+                duration: 200,
+                yoyo: true,
+                repeat: 5
+              });
             });
           }
           powerUp.destroy();
@@ -694,16 +694,28 @@ const spawnVirus = () => {
 spawnVirus();
 
 // Marco para el icono de power-up (siempre visible)
-this.activePowerUpFrame = this.add.rectangle(310, 336, 23, 23)
+this.activePowerUpFrame = this.add.rectangle(315, 339, 23, 23)
   .setStrokeStyle(2, 0xffffff)
   .setFillStyle(0x000000, 0.4) // Opcional: fondo semitransparente
   .setDepth(19); // Debajo del icono
 
 // Icono del power-up (encima del marco)
-this.activePowerUpIcon = this.add.image(310, 336, null)
+this.activePowerUpIcon = this.add.image(315, 339, null)
   .setScale(1)
   .setVisible(false)
   .setDepth(20);
+
+// Texto para el power-up activo
+this.activePowerUpText = this.add.text(
+    229, // X: un poco a la derecha de la cajita (310 + 20)
+    337, // Y: alineado verticalmente con el icono
+    "Power-up \n activo:",
+    {
+        fontSize: '120px',
+        color: '#fff',
+        fontFamily: 'Retro Gaming'
+    }
+).setOrigin(0, 0.5).setScale(0.1).setDepth(20);
 
   this.fadeRect = this.add.rectangle(320, 180, 640, 360, 0x000000, 0)
   .setDepth(100)

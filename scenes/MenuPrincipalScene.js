@@ -32,6 +32,7 @@ export default class MenuPrincipalScene extends Phaser.Scene {
         this.load.image("laser", "public/assets/laser.png");
         this.load.spritesheet("celula", "public/assets/CELULAS-SPRITESHEET.png", { frameWidth: 32, frameHeight: 32 });
         this.load.spritesheet("agente_shoot", "public/assets/agente disparo.png", { frameWidth: 48, frameHeight: 48 });
+        this.load.image("pared_derecha", "public/assets/pared derecha.png"); // Asegúrate de tener esta línea
     }
 
     create() {
@@ -50,40 +51,69 @@ export default class MenuPrincipalScene extends Phaser.Scene {
             }
         }
         //logo
-        this.add.image(width / 2, height * 0.35, "logo").setOrigin(0.5).setScale(1.1).setDepth(20);
+        this.add.image(width / 2, height * 0.32, "logo").setOrigin(0.5).setScale(1.1).setDepth(20);
 
         // Fondo
-        this.add.image(320, 180, "fondo").setOrigin(0.5, 0.5).setDepth(0);
+        this.add.image(320, 180, "fondo").setOrigin(0.5, 0.5).setDepth(1);
+
+        this.add.text(65, 335, 'UNRaf  ', {
+            fontSize: '170px',
+            color: '#fff',
+            fontFamily: 'Retro Gaming'
+        }).setOrigin(0.5).setScale(0.1).setDepth(12);
+
+        this.add.text(585, 335, "Alfaro", {
+            fontSize: '170px',
+            color: '#fff',
+            fontFamily: 'Retro Gaming'
+        }).setOrigin(0.5).setScale(0.1).setDepth(12);
 
         const menuOptions = [
             { text: 'Jugar', scene: 'InstruccionesScene' }, // Cambia aquí
             { text: 'Opciones', scene: 'OpcionesScene' },
         ];
 
-        const startY = height * 0.68;
-        const optionSpacing = 40;
+        const startY = height * 0.70;
+        const optionSpacingX = 180; // Espacio horizontal entre opciones
 
         this.menuTexts = [];
         this.selectedOption = 0;
 
-        // Opciones de menú
+        // Opciones de menú (en horizontal)
         menuOptions.forEach((option, i) => {
-            const menuText = this.add.text(width / 2, startY + i * optionSpacing, option.text, {
-                fontFamily: 'Retro Gaming',
-                fontSize: '240px',
-                color: i === 0 ? '#ffcc00' : '#ffffff'
-            }).setOrigin(0.5).setScale(0.1).setDepth(20); // <-- depth alto
+            const menuText = this.add.text(
+                width / 2 + (i - (menuOptions.length - 1) / 2) * optionSpacingX, // X: centrado y espaciado
+                startY, // Y: igual para ambos
+                option.text,
+                {
+                    fontFamily: 'Retro Gaming',
+                    fontSize: '240px',
+                    color: i === 0 ? '#ffcc00' : '#ffffff'
+                }
+            ).setOrigin(0.5).setScale(0.1).setDepth(20); // <-- depth alto
 
             // No setInteractive, solo teclado
             this.menuTexts.push(menuText);
         });
 
-        this.input.keyboard.on('keydown-UP', () => {
+        this.setSelectedOption(this.selectedOption);
+
+        this.input.keyboard.on('keydown-UP',  () => {
+            const prev = this.selectedOption;
+            this.setSelectedOption((this.selectedOption - 1 + menuOptions.length) % menuOptions.length, 'up');
+        });
+        
+        this.input.keyboard.on('keydown-LEFT',  () => {
             const prev = this.selectedOption;
             this.setSelectedOption((this.selectedOption - 1 + menuOptions.length) % menuOptions.length, 'up');
         });
 
         this.input.keyboard.on('keydown-DOWN', () => {
+            const prev = this.selectedOption;
+            this.setSelectedOption((this.selectedOption + 1) % menuOptions.length, 'down');
+        });
+
+        this.input.keyboard.on('keydown-RIGHT', () => {
             const prev = this.selectedOption;
             this.setSelectedOption((this.selectedOption + 1) % menuOptions.length, 'down');
         });
@@ -144,7 +174,7 @@ export default class MenuPrincipalScene extends Phaser.Scene {
 
         // --- Animación de introducción ---
         const logoCellX = width / 2;
-        const logoCellY = height * 0.30 + 60; // Ajusta según la posición del logo
+        const logoCellY = height * 0.27 + 60; // Ajusta según la posición del logo
 
         // 1. Célula grande bajo el logo
         //crear la animación de la célula
@@ -188,7 +218,7 @@ export default class MenuPrincipalScene extends Phaser.Scene {
         }
         
         // 2. Agente aparece en x = 24, mirando a la derecha
-        const agente = this.add.sprite(36, logoCellY + 118, "agente", 0).setScale(-0.75, 0.75).setDepth(5);
+        const agente = this.add.sprite(36, logoCellY + 129, "agente", 0).setScale(-0.75, 0.75).setDepth(5);
         agente.play('agente_walk');
 
         // Cuando el agente entra o sale, cambia su depth:
@@ -298,6 +328,12 @@ export default class MenuPrincipalScene extends Phaser.Scene {
                 this._menuUpdateEvent = null;
             }
         });
+
+        // Agrega el sprite de la pared derecha (ajusta la ruta y frame si es necesario)
+        const paredDerecha = this.add.sprite(
+            320, 180,        // Ajusta Y para que coincida con el fondo
+            "pared_derecha" // El key que usaste en preload
+        ).setOrigin(0.5, 0.5).setDepth(10); // Depth mayor que el agente
     }
 
     setSelectedOption(index, direction) {
@@ -307,6 +343,7 @@ export default class MenuPrincipalScene extends Phaser.Scene {
         this.selectedOption = index;
         this.menuTexts.forEach((text, i) => {
             text.setStyle({ color: i === index ? '#ffcc00' : '#ffffff' });
+            text.setScale(i === index ? 0.14 : 0.1); // Más grande si está seleccionada
         });
     }
 }

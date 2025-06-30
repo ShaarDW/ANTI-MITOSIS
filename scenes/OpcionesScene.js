@@ -16,20 +16,21 @@ export default class OpcionesScene extends Phaser.Scene {
 
         // Fondo y título
         this.add.image(centerX, 180, "fondo").setOrigin(0.5, 0.5).setDepth(0);
-        this.add.text(centerX, baseY, 'Opciones', { fontSize: '28px', color: '#fff', fontFamily: 'Retro Gaming' }).setOrigin(0.5);
 
+        this.add.text(centerX, baseY, 'Opciones', { fontSize: '280px', color: '#fff', fontFamily: 'Retro Gaming' }).setOrigin(0.5).setScale(0.1);
+
+ ;
         // Volumen de Música
-        this.add.text(centerX - 110, baseY + spacingY, 'Música:', { fontSize: '20px', color: '#fff', fontFamily: 'Retro Gaming' }).setOrigin(1, 0.5);
+        this.add.text(centerX - 110, baseY + spacingY, "Música", { fontSize: '200px', color: '#fff', fontFamily: 'Retro Gaming' }).setOrigin(1, 0.5).setScale(0.1);
 
-        this.musicSlider = this.add.rectangle(centerX, baseY + spacingY, 200, 10, 0x888888).setInteractive();
-        this.musicHandle = this.add.circle(centerX + 100, baseY + spacingY, 12, 0xffffff).setInteractive();
+        this.musicSlider = this.add.rectangle(centerX, baseY + spacingY + 4, 200, 10, 0x888888);
+        this.musicHandle = this.add.rectangle(centerX + 100, baseY + spacingY + 4, 24, 24, 0xffffff);
 
         // Volumen de Sonidos
-        this.add.text(centerX - 110, baseY + spacingY * 2, 'Sonidos:', { fontSize: '20px', color: '#fff', fontFamily: 'Retro Gaming' }).setOrigin(1, 0.5);
+        this.add.text(centerX - 110, baseY + spacingY * 2, "Sonido", { fontSize: '200px', color: '#fff', fontFamily: 'Retro Gaming' }).setOrigin(1, 0.5).setScale(0.1);
 
-        this.sfxSlider = this.add.rectangle(centerX, baseY + spacingY * 2, 200, 10, 0x888888).setInteractive();
-        this.sfxHandle = this.add.circle(centerX + 100, baseY + spacingY * 2, 12, 0xffffff).setInteractive();
-
+        this.sfxSlider = this.add.rectangle(centerX, baseY + spacingY * 2 + 4, 200, 10, 0x888888);
+        this.sfxHandle = this.add.rectangle(centerX + 100, baseY + spacingY * 2 + 4, 24, 24, 0xffffff);
         // Valores iniciales
         this.musicVolume = (this.sys.game.globals.musicVolume !== undefined) ? this.sys.game.globals.musicVolume : 1;
         this.sfxVolume = (this.sys.game.globals.sfxVolume !== undefined) ? this.sys.game.globals.sfxVolume : 1;
@@ -37,23 +38,16 @@ export default class OpcionesScene extends Phaser.Scene {
         this.updateMusicHandle();
         this.updateSfxHandle();
 
-        // Drag música
-        this.musicHandle.setInteractive({ draggable: true });
-        this.input.setDraggable(this.musicHandle);
-        this.musicHandle.on('drag', (pointer, dragX) => {
-            dragX = Phaser.Math.Clamp(dragX, centerX - 100, centerX + 100);
-            this.musicHandle.x = dragX;
-            this.musicVolume = (dragX - (centerX - 100)) / 200;
-            this.updateMusicVolume();
-        });
         // Opciones de menú: 0 = música, 1 = sonidos, 2 = volver
         this.selectedBar = 0;
         const volverY = baseY + spacingY * 2.4 + 30;
-        const volverBtn = this.add.text(centerX, volverY, 'Volver', {
-            fontSize: '28px',
+        const volverBtn = this.add.text(centerX, volverY, "Volver", {
+            fontSize: '280px',
             color: '#fff',
             fontFamily: 'Retro Gaming'
-        }).setOrigin(0.5);
+        }).setOrigin(0.5).setScale(0.1);
+
+
 
         // Resalta la barra o el botón seleccionado
         const updateBarHighlight = () => {
@@ -106,7 +100,7 @@ export default class OpcionesScene extends Phaser.Scene {
             }
         });
 
-        // Seleccionar "Volver" con ESPACIO
+        // Seleccionar "Volver" with ESPACIO
         this.input.keyboard.on('keydown-SPACE', () => {
             if (this.selectedBar === 2) {
                 if (this.sound) {
@@ -147,3 +141,4 @@ export default class OpcionesScene extends Phaser.Scene {
         this.updateSfxHandle();
     }
 }
+
