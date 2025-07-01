@@ -23,10 +23,9 @@ export default class MenuPrincipalScene extends Phaser.Scene {
 
     preload() {
         this.load.image("fondo", "public/assets/FONDO GAME PRUEBA.png");
-        this.load.audio("navegar_arriba", "public/assets/Audio/navegar opciones.wav");
         this.load.audio("navegar_abajo", "public/assets/Audio/navegar opciones 2.wav");
         this.load.audio("seleccionar", "public/assets/Audio/Seleccionar.wav");
-        this.load.audio("musica_menu", "public/assets/Audio/musica menu.wav");
+        this.load.audio("musica_menu", "public/assets/Audio/musica menu.ogg");
         this.load.image("logo", "public/assets/logo.png");
         this.load.spritesheet("agente", "public/assets/agente.png", { frameWidth: 48, frameHeight: 48 });
         this.load.image("laser", "public/assets/laser.png");

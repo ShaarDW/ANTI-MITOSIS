@@ -39,10 +39,9 @@ export default class PantallaCarga extends Phaser.Scene {
         // Aquí puedes cargar todos los assets de las demás escenas
         // Ejemplo:
         this.load.image("fondo", "public/assets/FONDO GAME PRUEBA.png");
-        this.load.audio("navegar_arriba", "public/assets/Audio/navegar opciones.wav");
         this.load.audio("navegar_abajo", "public/assets/Audio/navegar opciones 2.wav");
         this.load.audio("seleccionar", "public/assets/Audio/Seleccionar.wav");
-        this.load.audio("musica_menu", "public/assets/Audio/musica menu.wav");
+        this.load.audio("musica_menu", "public/assets/Audio/musica menu.ogg");
         this.load.image("logo", "public/assets/logo.png");
         this.load.spritesheet("agente", "public/assets/agente.png", { frameWidth: 48, frameHeight: 48 });
         this.load.image("laser", "public/assets/laser.png");
@@ -51,7 +50,6 @@ export default class PantallaCarga extends Phaser.Scene {
 
 
         this.load.audio("Seleccionar", "public/assets/Audio/Seleccionar.wav");
-        this.load.audio("musica_menu", "public/assets/Audio/musica menu.wav");
         this.load.audio("navegar_opciones", "public/assets/Audio/navegar opciones 2.wav");
 
 
@@ -97,8 +95,8 @@ export default class PantallaCarga extends Phaser.Scene {
     this.load.audio("hit_agente", "public/assets/Audio/Hit_agente.wav");
     this.load.audio("Pickup_Powerup", "public/assets/Audio/Pickup_Coin2.wav");
     this.load.audio("muerte agente", "public/assets/Audio/muerte agente.wav");
-    this.load.audio("musica_gameplay_1", "public/assets/Audio/musica gameplay 1.wav");
-    this.load.audio("musica_gameplay_2", "public/assets/Audio/musica gameplay 2.wav");
+    this.load.audio("musica_gameplay_1", "public/assets/Audio/musica gameplay 1.ogg");
+    this.load.audio("musica_gameplay_2", "public/assets/Audio/musica gameplay 2.ogg");
     this.load.audio("risa_celula", "public/assets/Audio/risas.wav");
 
     this.load.audio("contador_puntos", "public/assets/Audio/contador puntos.mp3");

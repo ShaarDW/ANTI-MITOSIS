@@ -94,8 +94,8 @@ export default class GameplayScene extends Phaser.Scene {
     this.load.audio("hit_agente", "public/assets/Audio/Hit_agente.wav");
     this.load.audio("Pickup_Powerup", "public/assets/Audio/Pickup_Coin2.wav");
     this.load.audio("muerte agente", "public/assets/Audio/muerte agente.wav");
-    this.load.audio("musica_gameplay_1", "public/assets/Audio/musica gameplay 1.wav");
-    this.load.audio("musica_gameplay_2", "public/assets/Audio/musica gameplay 2.wav");
+    this.load.audio("musica_gameplay_1", "public/assets/Audio/musica gameplay 1.ogg");
+    this.load.audio("musica_gameplay_2", "public/assets/Audio/musica gameplay 2.ogg");
     this.load.audio("risa_celula", "public/assets/Audio/risas.wav");
   }
 
