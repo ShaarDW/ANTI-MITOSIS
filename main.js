@@ -5,13 +5,12 @@ import InstruccionesScene from "./scenes/Instrucciones.js";
 import HelloWorldScene from "./scenes/GameplayScene.js";
 import FinalScene from "./scenes/FinalScene.js";
 
-
 // Create a new Phaser config object
 const config = {
   type: Phaser.AUTO,
   width: 640,
   height: 360,
-  pixelArt: true, // <--- ¡Agrega esta línea!
+  pixelArt: true,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -20,8 +19,8 @@ const config = {
       height: 360,
     },
     max: {
-      width: 1920, // <-- Cambia aquí
-      height: 1080, // <-- Cambia aquí
+      width: 1920,
+      height: 1080,
     },
   },
   physics: {
@@ -31,16 +30,11 @@ const config = {
       gravity: { y: 0.22 },
     },
   },
-  // List of scenes to load
-  // Only the first scene will be shown
-  // Remember to import the scene before adding it to the list
   scene: [PantallaCarga, MenuPrincipalScene, OpcionesScene, InstruccionesScene, HelloWorldScene, FinalScene],
-  // Add the scene to the list of scenes
 };
 
-// Create a new Phaser game instance
 const game = new Phaser.Game(config);
 game.globals = {
-    musicVolume: 0.3, // o el valor por defecto que prefieras
+    musicVolume: 0.3,
     sfxVolume: 0.3
 };

@@ -16,29 +16,21 @@ export default class OpcionesScene extends Phaser.Scene {
 
         // Fondo y título
         this.add.image(centerX, 180, "fondo").setOrigin(0.5, 0.5).setDepth(0);
-
         this.add.text(centerX, baseY, 'Opciones', { fontSize: '280px', color: '#fff', fontFamily: 'Retro Gaming' }).setOrigin(0.5).setScale(0.1);
-
- ;
         // Volumen de Música
         this.add.text(centerX - 110, baseY + spacingY, "Música", { fontSize: '200px', color: '#fff', fontFamily: 'Retro Gaming' }).setOrigin(1, 0.5).setScale(0.1);
-
         this.musicSlider = this.add.rectangle(centerX, baseY + spacingY + 4, 200, 10, 0x888888);
         this.musicHandle = this.add.rectangle(centerX + 100, baseY + spacingY + 4, 24, 24, 0xffffff);
-
         // Volumen de Sonidos
         this.add.text(centerX - 110, baseY + spacingY * 2, "Sonido", { fontSize: '200px', color: '#fff', fontFamily: 'Retro Gaming' }).setOrigin(1, 0.5).setScale(0.1);
-
         this.sfxSlider = this.add.rectangle(centerX, baseY + spacingY * 2 + 4, 200, 10, 0x888888);
         this.sfxHandle = this.add.rectangle(centerX + 100, baseY + spacingY * 2 + 4, 24, 24, 0xffffff);
         // Valores iniciales
         this.musicVolume = (this.sys.game.globals.musicVolume !== undefined) ? this.sys.game.globals.musicVolume : 1;
         this.sfxVolume = (this.sys.game.globals.sfxVolume !== undefined) ? this.sys.game.globals.sfxVolume : 1;
-
         this.updateMusicHandle();
         this.updateSfxHandle();
-
-        // Opciones de menú: 0 = música, 1 = sonidos, 2 = volver
+        // Opciones de menú
         this.selectedBar = 0;
         const volverY = baseY + spacingY * 2.4 + 30;
         const volverBtn = this.add.text(centerX, volverY, "Volver", {
@@ -47,9 +39,7 @@ export default class OpcionesScene extends Phaser.Scene {
             fontFamily: 'Retro Gaming'
         }).setOrigin(0.5).setScale(0.1);
 
-
-
-        // Resalta la barra o el botón seleccionado
+        // Resalta lo seleccionado
         const updateBarHighlight = () => {
             this.musicHandle.setStrokeStyle(this.selectedBar === 0 ? 4 : 0, 0xffff00);
             this.sfxHandle.setStrokeStyle(this.selectedBar === 1 ? 4 : 0, 0xffff00);
@@ -57,7 +47,7 @@ export default class OpcionesScene extends Phaser.Scene {
         };
         updateBarHighlight();
 
-        // Cambiar selección con ARRIBA/ABAJO
+        // Cambiar selección con flechitas arriba y abajo
         this.input.keyboard.on('keydown-UP', () => {
             this.selectedBar = (this.selectedBar - 1 + 3) % 3;
             updateBarHighlight();
@@ -73,7 +63,7 @@ export default class OpcionesScene extends Phaser.Scene {
             }
         });
 
-        // Modificar solo la barra seleccionada con IZQUIERDA/DERECHA
+        // Ajustar volumen con flechitas izquierda y derecha
         this.input.keyboard.on('keydown-LEFT', () => {
             if (this.selectedBar === 0) {
                 this.musicVolume = Phaser.Math.Clamp(this.musicVolume - 0.1, 0, 1);
@@ -100,7 +90,7 @@ export default class OpcionesScene extends Phaser.Scene {
             }
         });
 
-        // Seleccionar "Volver" with ESPACIO
+        // Seleccionar volver con espacio
         this.input.keyboard.on('keydown-SPACE', () => {
             if (this.selectedBar === 2) {
                 if (this.sound) {
@@ -112,12 +102,12 @@ export default class OpcionesScene extends Phaser.Scene {
             }
         });
 
-        // Música de menú (no la vuelvas a crear si ya existe)
+        // Música de menú
         if (this.sys.game.globals.music) {
             this.sys.game.globals.music.setVolume(this.musicVolume);
         }
     }
-
+    //Update de los distintos controles de volumen
     updateMusicHandle() {
         const centerX = 320;
         this.musicHandle.x = centerX - 100 + this.musicVolume * 200;

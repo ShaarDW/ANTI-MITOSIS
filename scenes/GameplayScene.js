@@ -8,27 +8,24 @@ export default class GameplayScene extends Phaser.Scene {
   }
 
   init() {
-    // this is called before the scene is created
-    // init variables
-    // take data passed from other scenes
-    // data object param {}
-    this.score = 0; // Inicializa el score aquí
-    this.invulnerable = false; // Para evitar perder varias vidas en un solo frame
-    this.lives = 3; // Inicializa las vidas
+    // inializar las variables en 0
+    this.score = 0;
+    this.invulnerable = false;
+    this.lives = 3;
     this.maxLives = 3;
-    this.astronauta = null; // El personaje jugable
-    this.circles = []; // Array para las burbujas
-    this.lasers = []; // Array para los láseres
+    this.astronauta = null;
+    this.circles = [];
+    this.lasers = []; 
     this.viruses = [];
-    this.powerUps = []; // Array para los power-ups
+    this.powerUps = []; 
     this.lifeSprites = [];
-    this.hasShield = false; // Para el power-up de escudo
-    this.tripleShot = false; // Para el power-up de triple disparo
-    this.bubbleSpeedMultiplier = 1; // Para aumentar la velocidad de las burbujas
-    this.isShooting = false; // Para controlar el estado de disparo
-    this.laserCooldown = 0; // Tiempo en milisegundos hasta el próximo disparo permitido
-    this.laserDelay = 500; // Delay entre disparos en ms (ajusta a tu gusto)
-    this.spawnDelay = 9000; // 9 segundos en ms
+    this.hasShield = false; 
+    this.tripleShot = false; 
+    this.bubbleSpeedMultiplier = 1; 
+    this.isShooting = false;
+    this.laserCooldown = 0;
+    this.laserDelay = 500;
+    this.spawnDelay = 9000;
     this.gameOverTriggered = false;
     this.activePowerUpIcon = null;
     this.fadeRect = null;
@@ -36,58 +33,55 @@ export default class GameplayScene extends Phaser.Scene {
   }
 
   preload() {
-    // load assets
-    //this.load.image("circulo", "public/assets/CELULAS SPRITESHEET.png");
     this.load.image("laser", "public/assets/laser.png");
     this.load.image("fondo game", "public/assets/FONDO GAME PRUEBA.png")
     this.load.spritesheet("circleSheet", "public/assets/CELULAS-SPRITESHEET.png", {
-        frameWidth: 32, // ajusta al tamaño de tu frame
+        frameWidth: 32,
         frameHeight: 32
     });
     this.load.spritesheet("agente", "public/assets/agente.png", {
-      frameWidth: 48, // Ajusta según el tamaño de tu frame
+      frameWidth: 48,
       frameHeight: 48 
     });
     this.load.image("vida agente", "public/assets/vida agente.png");
     this.load.image("powerup_shield", "public/assets/escudo.png");
     this.load.image("powerup_triple", "public/assets/triple disparo.png");
     this.load.spritesheet("agente disparo", "public/assets/agente disparo.png", {
-      frameWidth: 48, // Ajusta según el tamaño de tu frame
+      frameWidth: 48,
       frameHeight: 48
     });
     this.load.spritesheet("virus", "public/assets/virus.png", {
-      frameWidth: 16, // Ajusta según el tamaño de tu frame
+      frameWidth: 16,
       frameHeight: 16
     });
     this.load.spritesheet("virus muerte", "public/assets/virus muerte.png", {
-      frameWidth: 16, // Ajusta según el tamaño de tu frame
+      frameWidth: 16,
       frameHeight: 16
     });
     this.load.spritesheet("celula muerte", "public/assets/muerte celula.png", {
-      frameWidth: 32, // Ajusta según el tamaño de tu frame
+      frameWidth: 32,
       frameHeight: 32
     });
     this.load.spritesheet("500", "public/assets/500.png", {
-      frameWidth: 21, // Ajusta según el tamaño de tu frame
+      frameWidth: 21,
       frameHeight: 21
     });
     this.load.spritesheet("2000", "public/assets/2000.png", {
-      frameWidth: 21, // Ajusta según el tamaño de tu frame
+      frameWidth: 21,
       frameHeight: 21
     });
     this.load.spritesheet("500", "public/assets/500.png", {
-      frameWidth: 21, // Ajusta según el tamaño de tu frame
+      frameWidth: 21,
       frameHeight: 21
     });
     this.load.spritesheet("celula jijeo", "public/assets/celula jijeo.png", {
-      frameWidth: 32, // Ajusta según el tamaño de tu frame
+      frameWidth: 32,
       frameHeight: 34
     });
     this.load.spritesheet("virus jijeo", "public/assets/virus jijeo.png", {
-      frameWidth: 16, // Ajusta según el tamaño de tu frame
+      frameWidth: 16,
       frameHeight: 17
     });
-  
     this.load.audio("laser_shoot", "public/assets/Audio/Laser_Shoot.wav");
     this.load.audio("muerte_celula", "public/assets/Audio/muerte celula.wav");
     this.load.audio("muerte_virus", "public/assets/Audio/muerte virus.wav");
@@ -100,9 +94,8 @@ export default class GameplayScene extends Phaser.Scene {
   }
 
   create() {
-    //que se muestre el fondo
+    //fondo
     this.add.image(320, 180, "fondo game").setOrigin(0.5, 0.5).setDepth(0);
-
     // Dimensiones
     this.width = 640;
     this.height =  360;
@@ -110,7 +103,6 @@ export default class GameplayScene extends Phaser.Scene {
     const width = this.width;
     const height = this.height;
     const thickness = this.thickness;
-
     // Suelo
     this.add.rectangle(width / 2, height - thickness / 2, width, thickness)
       .setOrigin(0.5)
@@ -120,31 +112,27 @@ export default class GameplayScene extends Phaser.Scene {
       height - thickness / 2 - 34,
       width,
       thickness,
-      { isStatic: true, label: 'suelo' } // <--- agrega label
+      { isStatic: true, label: 'suelo' }
     );
-
     // Techo
     this.add.rectangle(width / 2, thickness / 2, width, thickness)
       .setOrigin(0.5)
       .setDepth(1);
     this.matter.add.rectangle(width / 2, thickness / 2 -4, width, thickness, { isStatic: true });
-
     // Pared izquierda
     this.add.rectangle(thickness / 2, height / 2, thickness, height)
       .setOrigin(0.5)
       .setDepth(1);
     this.matter.add.rectangle(thickness / 2, height / 2, thickness, height, { isStatic: true });
-
     // Pared derecha
     this.add.rectangle(width - thickness / 2, height / 2, thickness, height)
       .setOrigin(0.5)
       .setDepth(1);
     this.matter.add.rectangle(width - thickness / 2, height / 2, thickness, height, { isStatic: true });
-
-      // 1. Crea la animación primero
+    // Animaciones
     this.anims.create({
         key: 'circleAnim',
-        frames: this.anims.generateFrameNumbers('circleSheet', { start: 0, end: 3 }), // Cambia end: 4 por end: 3
+        frames: this.anims.generateFrameNumbers('circleSheet', { start: 0, end: 3 }), 
         frameRate: 5,
         repeat: -1
     });
@@ -160,11 +148,11 @@ export default class GameplayScene extends Phaser.Scene {
       frameRate: 10,
       repeat: -1
   });
-  const shootFrames = 16; // Cambia este número por la cantidad real de frames de tu spritesheet
+  const shootFrames = 16; 
   this.anims.create({
     key: 'agente_shoot',
     frames: this.anims.generateFrameNumbers('agente disparo', { start: 0, end: shootFrames - 1 }),
-    frameRate: shootFrames / 0.3, // Duración total: 0.2 segundos
+    frameRate: shootFrames / 0.3,
     repeat: 0
 });
 this.anims.create({
@@ -175,44 +163,44 @@ this.anims.create({
 });
 this.anims.create({
   key: 'celula_muerte_anim',
-  frames: this.anims.generateFrameNumbers('celula muerte', { start: 0, end: 1 }), // Ajusta end según tus frames
+  frames: this.anims.generateFrameNumbers('celula muerte', { start: 0, end: 1 }), 
   frameRate: 12,
   repeat: 0
 });
 this.anims.create({
   key: 'celula_jijeo_anim',
-  frames: this.anims.generateFrameNumbers('celula jijeo', { start: 0, end: 1 }), // Ajusta end según tus frames
+  frames: this.anims.generateFrameNumbers('celula jijeo', { start: 0, end: 1 }),
   frameRate: 12,
   repeat: -1
 });
 this.anims.create({
   key: 'virus_jijeo_anim',
-  frames: this.anims.generateFrameNumbers('virus jijeo', { start: 0, end: 1 }), // Ajusta end según tus frames
+  frames: this.anims.generateFrameNumbers('virus jijeo', { start: 0, end: 1 }),
   frameRate: 12,
   repeat: -1
 });
 this.anims.create({
   key: 'virus_muerte_anim',
-  frames: this.anims.generateFrameNumbers('virus muerte', { start: 0, end: 1 }), // Ajusta end según tus frames
+  frames: this.anims.generateFrameNumbers('virus muerte', { start: 0, end: 1 }),
   frameRate: 10,
   repeat: 0
 });
 this.anims.create({
   key: 'score2000',
-  frames: this.anims.generateFrameNumbers('2000', { start: 0, end: 6 }), // Ajusta end según tus frames
+  frames: this.anims.generateFrameNumbers('2000', { start: 0, end: 6 }), 
   frameRate: 11,
   repeat: 0
 });
 this.anims.create({
   key: 'score500',
-  frames: this.anims.generateFrameNumbers('500', { start: 0, end: 6 }), // Ajusta end según tus frames
+  frames: this.anims.generateFrameNumbers('500', { start: 0, end: 6 }),
   frameRate: 11,
   repeat: 0
 });
 
-    // Círculos estilo Super Pang
+    // Creacion de celula (burbuja/círculo jeje)
     const circleCount = 1;
-    const scale = 2; // Más grande para que se vean tipo burbuja
+    const scale = 2;
     this.circles = [];
 
     for (let i = 0; i < circleCount; i++) {
@@ -220,53 +208,49 @@ this.anims.create({
       const y = Phaser.Math.Between(80, height / 2);
       const circle = this.matter.add.sprite(x, y, "circleSheet");
       circle.setScale(scale);
-      circle.setCircle(circle.width); // Ajusta el cuerpo físico al tamaño visual
+      circle.setCircle(circle.width);
       circle.setBounce(1);
       circle.setFriction(0, 0, 0);
-      circle.setFrictionAir(0); // Cambia aquí
+      circle.setFrictionAir(0);
+
       // Velocidad horizontal inicial aleatoria
       const dir = Phaser.Math.Between(0, 1) === 0 ? -1 : 1;
       circle.setVelocity(dir * 1.5, -1.5);
       circle.setFixedRotation();
-      circle.direccionX = dir; // Guarda la dirección original
-      circle.isBubble = true; // Marca el objeto como burbuja
-      circle.play('circleAnim'); // <-- ¡Ahora sí puedes animar!
+      circle.direccionX = dir;
+      circle.isBubble = true;
+      circle.play('circleAnim');
       this.circles.push(circle);
     }
 
-    // Astronauta (personaje jugable)
+    // Agente (astronauta)
     this.astronauta = this.matter.add.sprite(width / 2, height - thickness - 34, "agente");
-    this.astronauta.setScale(0.75); // Ajusta si es necesario
+    this.astronauta.setScale(0.75);
     this.astronauta.play('agente_idle');
     this.astronauta.setRectangle(21, 34);
     this.astronauta.setFixedRotation();
     this.astronauta.setFriction(0.01, 0, 0);
     this.astronauta.setFrictionAir(0.01);
     this.astronauta.setBounce(0);
-
-
-    // Limitar movimiento a suelo
     this.astronauta.setOnCollide(() => {
-      // Puedes agregar lógica si quieres detectar cuando está en el suelo
     });
 
-    // Input
+    // Inputs
     this.cursors = this.input.keyboard.createCursorKeys();
     this.keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
     this.keyShoot = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.lasers = [];
-    this.laserCooldown = 0; // Tiempo en milisegundos hasta el próximo disparo permitido
-    this.laserDelay = 500;  // Delay entre disparos en ms (ajusta a tu gusto)
+    this.laserCooldown = 0;
+    this.laserDelay = 500; //delay entre disparos
 
        // PUNTUACIÓN
-    this.score = 0; // Inicializa el score aquí
+    this.score = 0;
     this.scoreText = this.add.text(440, 320, '00000000', {
       fontSize: '280px',
       fill: '#fff',
       fontFamily: 'Retro Gaming',
     }).setScrollFactor(0).setDepth(10).setScale(0.1);
 
-    
     // Limpia listeners previos para evitar duplicados
     this.matter.world.off('collisionstart');
 
@@ -280,12 +264,10 @@ this.anims.create({
         if ((a.isLaser && b.isBubble) || (a.isBubble && b.isLaser)) {
           const bubble = a.isBubble ? a : b;
           const laserObj = a.isLaser ? a : b;
-
-          // Reproduce el sonido de muerte de célula
+          // sonido de muerte de célula
           if (this.sound) {
               this.sound.play("muerte_celula");
           }
-
           // Elimina el láser
           laserObj.destroy();
           this.lasers = this.lasers.filter(l => l !== laserObj);
@@ -315,7 +297,6 @@ this.anims.create({
             });
           }
 
-
           // Guarda las coordenadas antes de destruir la burbuja
           const bubbleX = bubble.x;
           const bubbleY = bubble.y;
@@ -324,7 +305,6 @@ this.anims.create({
           // Control de divisiones
           const maxSplits = 2;
           bubble.splitCount = bubble.splitCount || 0;
-
           if (bubble.splitCount < maxSplits) {
             const minScale = 0.04;
             const newScale = bubble.scaleX * 0.6;
@@ -352,27 +332,19 @@ this.anims.create({
               }
             }
           }
-
-          // Elimina la burbuja original SIEMPRE, pero antes muestra la animación de muerte
-          // 1. Desactiva física y oculta la burbuja original
           bubble.setVisible(false);
           bubble.setActive(false);
           bubble.body && bubble.body.destroy && bubble.body.destroy();
-
-          // 2. Crea el sprite de muerte en la misma posición y escala
           const deathSprite = this.add.sprite(bubbleX, bubbleY, 'celula muerte');
           deathSprite.setScale(bubbleScale);
           deathSprite.play('celula_muerte_anim');
-
-          // 3. Cuando termine la animación, destruye el sprite de muerte
+          // cuando termine la animación, destruye el sprite de muerte
           deathSprite.on('animationcomplete', () => {
               deathSprite.destroy();
           });
-
-          // 4. Elimina la burbuja del array y destruye el objeto
+          // elimina la burbuja del array y destruye el objeto
           this.circles = this.circles.filter(c => c !== bubble);
           bubble.destroy();
-
           // 10% de probabilidad de soltar power-up
           if (Phaser.Math.FloatBetween(0, 1) < 0.1 && bubbleX !== undefined && bubbleY !== undefined) {
             const tipo = Phaser.Math.Between(0, 1) === 0 ? "powerup_shield" : "powerup_triple";
@@ -386,7 +358,6 @@ this.anims.create({
             this.powerUps.push(powerUp);
           }
         }
-
         // Si colisiona un láser con un borde (suelo, techo, paredes)
         if (a.isLaser && b.label === "Rectangle Body" && b.isStatic) {
           a.destroy();
@@ -396,7 +367,6 @@ this.anims.create({
           b.destroy();
           this.lasers = this.lasers.filter(l => l !== b);
         }
-
         // Colisión burbuja-agente
         if (
           (a.isBubble && b === this.astronauta) ||
@@ -410,37 +380,30 @@ this.anims.create({
             }
             this.perderVida();
             this.invulnerable = true;
-            this.astronauta.setAlpha(0.5); // Efecto visual
-
-            // --- Haz que la burbuja salga disparada hacia arriba ---
+            this.astronauta.setAlpha(0.5);
             const bubbleObj = a.isBubble ? a : b;
-            bubbleObj.setVelocityY(-4); // Ajusta la velocidad si quieres
-
-            // Quita la invulnerabilidad después de 1 segundo
+            bubbleObj.setVelocityY(-4);
+            // quita la invulnerabilidad después de 1 segundo
             this.time.delayedCall(1000, () => {
               this.invulnerable = false;
               this.astronauta.setAlpha(1);
             });
-
-            // Si se queda sin vidas, termina el juego
+            // si se queda sin vidas, termina el juego (funcion gameOver)
             if (this.lives <= 0) {
               this.gameOver();
             }
           }
         }
-
         // Colisión agente-powerup
         if (
           (a.isPowerUp && b === this.astronauta) ||
           (b.isPowerUp && a === this.astronauta)
         ) {
           const powerUp = a.isPowerUp ? a : b;
-
           // Reproduce el sonido de recoger power-up
           if (this.sound) {
             this.sound.play("Pickup_Powerup", { volume: 0.76 * this.sys.game.globals.sfxVolume });
           }
-
           // Limpia cualquier timer/tween/delayedCall previo de ambos power-ups
           if (this.shieldTimer) {
             this.shieldTimer.remove(false);
@@ -460,12 +423,10 @@ this.anims.create({
             this.powerUpBlinkDelay = null;
           }
           this.activePowerUpIcon.setAlpha(1);
-
           // Desactiva efectos previos
           this.hasShield = false;
           this.tripleShot = false;
           this.astronauta.clearTint();
-
           // Activa el nuevo power-up
           if (powerUp.tipo === "powerup_shield") {
             this.hasShield = true;
@@ -478,8 +439,7 @@ this.anims.create({
               this.activePowerUpIcon.setVisible(false);
               this.shieldTimer = null;
             });
-
-            // NUEVO: guarda el delayedCall del parpadeo
+            // guarda el delayedCall del parpadeo
             this.powerUpBlinkDelay = this.time.delayedCall(3800, () => {
               this.activePowerUpTween = this.tweens.add({
                 targets: this.activePowerUpIcon,
@@ -492,14 +452,12 @@ this.anims.create({
           } else if (powerUp.tipo === "powerup_triple") {
             this.tripleShot = true;
             this.activePowerUpIcon.setTexture("powerup_triple").setVisible(true);
-
             this.tripleShotTimer = this.time.delayedCall(5000, () => {
               this.tripleShot = false;
               this.activePowerUpIcon.setVisible(false);
               this.tripleShotTimer = null;
             });
-
-            // NUEVO: guarda el delayedCall del parpadeo
+            // guarda el delayedCall del parpadeo
             this.powerUpBlinkDelay = this.time.delayedCall(3800, () => {
               this.activePowerUpTween = this.tweens.add({
                 targets: this.activePowerUpIcon,
@@ -513,37 +471,33 @@ this.anims.create({
           powerUp.destroy();
           this.powerUps = this.powerUps.filter(p => p !== powerUp);
         }
-
         // Colisión virus-agente
         if (
           (a.isVirus && b === this.astronauta) ||
           (b.isVirus && a === this.astronauta)
         ) {
           if (!this.invulnerable && this.lives > 0) {
-            // Reproduce el sonido de golpe al agente
+            // sonido de golpe al agente
             if (this.sound) {
               this.sound.play("hit_agente");
             }
             this.perderVida();
             this.invulnerable = true;
-            this.astronauta.setAlpha(0.5); // Efecto visual
+            this.astronauta.setAlpha(0.5);
             //el virus sale disparado hacia arriba
             const virusObj = a.isVirus ? a : b;
-            virusObj.setVelocity(0, -4); // Sale disparado hacia arriba
-
+            virusObj.setVelocity(0, -4);
             // Quita la invulnerabilidad después de 1 segundo
             this.time.delayedCall(1000, () => {
               this.invulnerable = false;
               this.astronauta.setAlpha(1);
             });
-
             // Si se queda sin vidas, termina el juego
             if (this.lives <= 0) {
               this.gameOver();
             }
           }
         }
-
         // Colisión láser-virus (nuevo)
         if (
           (a.isLaser && b.isVirus) ||
@@ -551,23 +505,19 @@ this.anims.create({
         ) {
           const virusObj = a.isVirus ? a : b;
           const laserObj = a.isLaser ? a : b;
-
           // Reproduce el sonido de muerte de virus
           if (this.sound) {
             this.sound.play("muerte_virus");
           }
-
           // Guarda la posición y escala antes de destruir el virus
           const virusX = virusObj.x;
           const virusY = virusObj.y;
           const virusScale = virusObj.scaleX;
-
           // Elimina el virus y el láser
           virusObj.destroy();
           laserObj.destroy();
           this.viruses = this.viruses.filter(v => v !== virusObj);
           this.lasers = this.lasers.filter(l => l !== laserObj);
-
           // Animación de muerte del virus
           const deathVirus = this.add.sprite(virusX, virusY, 'virus muerte');
           deathVirus.setScale(virusScale);
@@ -575,23 +525,19 @@ this.anims.create({
           deathVirus.on('animationcomplete', () => {
             deathVirus.destroy();
           });
-
           // Suma 2000 puntos
           this.score += 2000;
           if (this.scoreText) {
             this.scoreText.setText(this.score.toString().padStart(8, '0'));
           }
-
-          // Animación de "2000"
+          // Animación de 2000
           const scoreSprite = this.add.sprite(virusX, virusY, '2000');
           scoreSprite.setScale(1);
           scoreSprite.play({ key: 'score2000', repeat: 0 });
-
           scoreSprite.on('animationcomplete', () => {
             scoreSprite.destroy();
           });
         }
-
         // Colisión power-up con suelo
         if (
         (a.isPowerUp && b.body && b.body.label === 'suelo') ||
@@ -599,12 +545,11 @@ this.anims.create({
         ) {
           const powerUp = a.isPowerUp ? a : b;
           powerUp.setVelocity(0, 0);
-          powerUp.setIgnoreGravity(true); // ¡Esto detiene la caída!
+          powerUp.setIgnoreGravity(true);
         }
       });
     });
-
-    this.spawnDelay = 9000; // 9 segundos en ms
+    this.spawnDelay = 9000;
 
     this.spawnEvent = this.time.addEvent({
       delay: this.spawnDelay,
@@ -626,9 +571,8 @@ this.anims.create({
         circle.direccionX = dir;
         circle.isBubble = true;
         this.circles.push(circle);
-
-        // Reduce el delay en 100 ms (10 décimas de segundo)
-        this.spawnDelay = Math.max(80, this.spawnDelay - 80); // No baja de 70 ms
+        // Reduce el delay
+        this.spawnDelay = Math.max(80, this.spawnDelay - 80);
         this.spawnEvent.reset({
           delay: this.spawnDelay,
           callback: this.spawnEvent.callback,
@@ -637,7 +581,6 @@ this.anims.create({
         });
       }
     });
- 
     this.maxLives = 3;
     this.lives = this.maxLives;
     this.lifeSprites = [];
@@ -648,67 +591,54 @@ this.anims.create({
         .setDepth(10);
       this.lifeSprites.push(life);
     }
-
     this.powerUps = [];
     this.hasShield = false;
     this.tripleShot = false;
     this.bubbleSpeedMultiplier = 1;
-    this.isShooting = false; // Inicializa la bandera
-
+    this.isShooting = false;
     this.viruses = [];
-
-    // --- En create(), reemplaza el timer de virus por: ---
-const spawnVirus = () => {
+    // Función para spawnear virus
+  const spawnVirus = () => {
   const x = Phaser.Math.Between(40, this.width - 40);
   const y = Phaser.Math.Between(80, this.height / 2);
   const virus = this.matter.add.sprite(x, y, "virus");
   virus.play('virusAnim');
   virus.setScale(1);
-  virus.setRectangle(16, 16); // Hitbox cuadrada de 16x16
+  virus.setRectangle(16, 16);
   virus.setBounce(1);
   virus.setFriction(0, 0, 0);
   virus.setFrictionAir(0);
   virus.setIgnoreGravity(true);
-  virus.setFixedRotation(); // No rota
+  virus.setFixedRotation();
   virus.isVirus = true;
-
-  // Ángulo obtuso: entre 110° y 250° o entre -250° y -110°
   // En radianes: entre 110*(PI/180) y 250*(PI/180)
   const angleDeg = Phaser.Math.Between(110, 250);
   const angleRad = Phaser.Math.DegToRad(angleDeg);
-  const speed = 5; // Ajusta la velocidad a tu gusto
-
+  const speed = 5;
   const vx = Math.cos(angleRad) * speed;
   const vy = Math.sin(angleRad) * speed;
   virus.setVelocity(vx, vy);
-
   virus.direccionX = Math.sign(vx);
   this.viruses.push(virus);
-
-  // Programa el próximo spawn con delay aleatorio entre 7 y 10 segundos
   const nextDelay = Phaser.Math.Between(12000, 15000);
   this.time.delayedCall(nextDelay, spawnVirus, [], this);
 };
-
 // Inicia el primer spawn
 spawnVirus();
-
 // Marco para el icono de power-up (siempre visible)
 this.activePowerUpFrame = this.add.rectangle(315, 339, 23, 23)
   .setStrokeStyle(2, 0xffffff)
-  .setFillStyle(0x000000, 0.4) // Opcional: fondo semitransparente
-  .setDepth(19); // Debajo del icono
-
+  .setFillStyle(0x000000, 0.4)
+  .setDepth(19);
 // Icono del power-up (encima del marco)
 this.activePowerUpIcon = this.add.image(315, 339, null)
   .setScale(1)
   .setVisible(false)
   .setDepth(20);
-
 // Texto para el power-up activo
 this.activePowerUpText = this.add.text(
-    229, // X: un poco a la derecha de la cajita (310 + 20)
-    337, // Y: alineado verticalmente con el icono
+    229,
+    337,
     "Power-up \n activo:",
     {
         fontSize: '120px',
@@ -721,12 +651,10 @@ this.activePowerUpText = this.add.text(
   .setDepth(100)
   .setScrollFactor(0)
   .setOrigin(0.5);
-
   // Música de fondo alterna
   this.musicKeys = ["musica_gameplay_1", "musica_gameplay_2"];
-  this.currentMusicIndex = Phaser.Math.Between(0, 1); // <-- Random al inicio
+  this.currentMusicIndex = Phaser.Math.Between(0, 1);
   this.music = null;
-
   const playNextMusic = () => {
       if (this.music) {
           this.music.off('complete');
@@ -736,23 +664,19 @@ this.activePowerUpText = this.add.text(
       this.music = this.sound.add(key, { loop: false, volume: this.sys.game.globals.musicVolume });
       this.music.play();
       this.music.once('complete', () => {
-          // Alterna a la otra pista
           this.currentMusicIndex = (this.currentMusicIndex + 1) % this.musicKeys.length;
           playNextMusic();
       });
   };
-
   playNextMusic();
   }
-
   update() {
     const width = this.width;
     const thickness = this.thickness;
-    const velocidadX = 1.5; // Antes 3
+    const velocidadX = 1.5;
     this.bubbleSpeedMultiplier += 0.00004;
-
     this.circles.forEach(circle => {
-      // Si tocó una pared, invierte la dirección
+      // Si toca una pared, invierte la dirección
       if (
         (circle.x - circle.displayWidth / 2 <= thickness && circle.direccionX < 0) ||
         (circle.x + circle.displayWidth / 2 >= width - thickness && circle.direccionX > 0)
@@ -761,21 +685,18 @@ this.activePowerUpText = this.add.text(
       }
       // Fuerza la velocidad horizontal constante según la dirección
       circle.setVelocityX(circle.direccionX * velocidadX * this.bubbleSpeedMultiplier);
-
       // Rebote manual si toca el suelo
       if (circle.y + circle.displayHeight / 2 >= this.height - this.thickness -34) {
         circle.setVelocityY(-5); // Ajusta este valor para más o menos rebote
       }
-
       // Limita la velocidad máxima de cada círculo
-      const maxVel = 6; // Puedes ajustar este valor
+      const maxVel = 6;
       if (circle.body) {
         const vx = Phaser.Math.Clamp(circle.body.velocity.x, -maxVel, maxVel);
         const vy = Phaser.Math.Clamp(circle.body.velocity.y, -maxVel, maxVel);
         circle.setVelocity(vx, vy);
       }
     });
-
     // Movimiento del astronauta
     const velocidadJugador = 2.5;
     if (!this.isShooting) {
@@ -792,13 +713,11 @@ this.activePowerUpText = this.add.text(
         this.astronauta.play('agente_idle', true);
       }
     } else {
-      this.astronauta.setVelocityX(0); // Detiene movimiento horizontal
+      this.astronauta.setVelocityX(0);
     }
-
     // Mantener al astronauta pegado al suelo
     this.astronauta.setVelocityY(0);
-
-    // Disparo láser with Z
+    // Disparo láser con espacio
     if (Phaser.Input.Keyboard.JustDown(this.keyShoot) && this.laserCooldown <= 0 && !this.isShooting) {
       if (this.tripleShot) {
         for (let dx of [-0.8, 0, 0.8]) {
@@ -827,30 +746,24 @@ this.activePowerUpText = this.add.text(
         laser.isLaser = true;
         this.lasers.push(laser);
       }
-
       // Reproduce el sonido del disparo
       if (this.sound) {
         this.sound.play("laser_shoot");
       }
-
       this.laserCooldown = this.laserDelay;
-
       // Cambia animación a disparo y bloquea movimiento
       this.isShooting = true;
       this.astronauta.play('agente_shoot', true);
-
       // Cuando termine la animación de disparo, vuelve a idle y desbloquea movimiento
       this.astronauta.once('animationcomplete-agente_shoot', () => {
         this.isShooting = false;
         this.astronauta.play('agente_idle', true);
       });
     }
-
     // Resta el tiempo transcurrido al cooldown
     if (this.laserCooldown > 0) {
       this.laserCooldown -= this.game.loop.delta;
     }
-
     // Actualiza y elimina láseres fuera de pantalla
     this.lasers = this.lasers.filter(laser => {
       if (laser.y < -20) {
@@ -859,7 +772,6 @@ this.activePowerUpText = this.add.text(
       }
       return true;
     });
-
     // Movimiento y rebote de virus
     this.viruses.forEach(virus => {
       // Rebote en paredes laterales
@@ -870,16 +782,16 @@ this.activePowerUpText = this.add.text(
         virus.direccionX *= -1;
       }
       // Fuerza velocidad X constante
-      const speedX = 2.5 + Phaser.Math.FloatBetween(0, 0.8); // Velocidad horizontal entre 0.4 y 1
+      const speedX = 2.5 + Phaser.Math.FloatBetween(0, 0.8);
       virus.setVelocityX(virus.direccionX * speedX);
 
       // Rebote manual en suelo
       if (virus.y + virus.displayHeight / 2 >= this.height - this.thickness -55) {
-        virus.setVelocityY(-2.5); // Rebote hacia arriba
+        virus.setVelocityY(-2.5);
       }
       // Rebote manual en techo
       if (virus.y - virus.displayHeight / 2 <= this.thickness + 2) {
-        virus.setVelocityY(2); // Rebote hacia abajo
+        virus.setVelocityY(2);
       }
       // Limita velocidad máxima en Y
       if (virus.body) {
@@ -887,7 +799,6 @@ this.activePowerUpText = this.add.text(
         virus.setVelocityY(vy);
       }
     });
-
     this.powerUps.forEach(powerUp => {
       // Si el powerUp está cayendo y llega al suelo...
       if (
@@ -896,12 +807,11 @@ this.activePowerUpText = this.add.text(
       ) {
         powerUp.setVelocity(0, 0);
         powerUp.setIgnoreGravity(true);
-        powerUp.y = this.height - this.thickness - 34 - powerUp.displayHeight / 2; // Lo ajusta justo sobre el suelo
+        powerUp.y = this.height - this.thickness - 34 - powerUp.displayHeight / 2;
       }
     });
   }
-
-
+  // Función para perder vida
   perderVida() {
     if (this.hasShield) return; // No pierde vida si tiene escudo
     if (this.lives > 0) {
@@ -909,8 +819,8 @@ this.activePowerUpText = this.add.text(
       this.lifeSprites[this.lives].setVisible(false);
     }
   }
-
-gameOver() {
+  // Función para terminar el juego
+  gameOver() {
     if (this.gameOverTriggered) return;
     this.gameOverTriggered = true;
     if (this.music) {
@@ -920,8 +830,7 @@ gameOver() {
     if (this.sound) {
         this.sound.play("muerte agente", { volume: 0.5 * this.sys.game.globals.sfxVolume });
     }
-
-    // ¡Haz que todas las células se rían!
+    // Risas de las células y virus
     this.circles.forEach(c => {
         const x = c.x;
         const y = c.y;
@@ -933,13 +842,10 @@ gameOver() {
         risa.setScale(scale);
         risa.play('celula_jijeo_anim');
     });
-
     // Reproduce el sonido de risa de las células
     if (this.sound) {
         this.sound.play("risa_celula", { volume: 0.7 * this.sys.game.globals.sfxVolume });
     }
-
-    // ¡Haz que todos los virus se rían!
     this.viruses.forEach(v => {
         const x = v.x;
         const y = v.y;
@@ -951,29 +857,24 @@ gameOver() {
         risaVirus.setScale(scale);
         risaVirus.play('virus_jijeo_anim');
     });
-
-    // Detén física y animaciones
+    // Detiene física y animaciones
     this.matter.world.enabled = false;
     this.viruses.forEach(v => v.anims.pause());
     if (this.astronauta.anims) this.astronauta.anims.pause();
     this.lasers.forEach(l => l.setVelocity(0, 0));
     this.powerUps.forEach(p => p.setVelocity && p.setVelocity(0, 0));
-
-    // Bloquea input y animaciones del astronauta
+    // Bloquea input y animaciones del agente
     this.input.keyboard.enabled = false;
-    this.isShooting = true; // Bloquea movimiento y disparo en update
-
+    this.isShooting = true;
     // Detén el evento de spawn de burbujas si existe
     if (this.spawnEvent) {
         this.spawnEvent.remove(false);
     }
-
     // Detén el spawn de virus (si usas delayedCall en spawnVirus)
     if (this.virusSpawnTimer) {
         this.virusSpawnTimer.remove(false);
     }
-
-    // Fade opcional (si quieres)
+    // Fade
     if (this.fadeRect) {
       this.fadeRect.setDepth(9999);
       this.tweens.add({
